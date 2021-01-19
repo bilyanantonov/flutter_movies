@@ -1,0 +1,1 @@
+export 'movie_view_model.dart';
