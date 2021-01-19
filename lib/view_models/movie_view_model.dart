@@ -59,6 +59,7 @@ class MovieViewModel with ChangeNotifier {
   Future<void> getFavorites() async {
     List<Favorite> _favs = await _repository.getFavorites();
     if (_favs.length > 0) {
+      favoriteList.clear();
       favoriteList.addAll(_favs);
     }
   }
