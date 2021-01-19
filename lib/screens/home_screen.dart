@@ -9,6 +9,8 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  List<String> favorites = ["tt0118688"];
+
   @override
   void initState() {
     super.initState();
@@ -34,19 +36,50 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
+  void setFavorite(String imdbID) {
+    if (!favorites.contains(imdbID)) {
+      favorites.add(imdbID);
+    } else {
+      favorites.remove(imdbID);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    final orientation = MediaQuery.of(context).orientation;
     return Scaffold(
-      appBar: AppBar(title: Text("Movies")),
+      appBar: AppBar(
+        title: Text(
+          "Movies",
+          style: TextStyle(color: Colors.blue),
+        ),
+        backgroundColor: Colors.white,
+      ),
       body: FutureBuilder(
           future: getMovies(),
           builder: (BuildContext context, AsyncSnapshot<List<Movie>> snapshot) {
             if (snapshot.hasData) {
-              return ListView.builder(
-                  itemCount: snapshot.data.length,
-                  itemBuilder: (context, index) {
-                    return buildMovieCard(context, snapshot, index);
-                  });
+              return Column(
+                children: [
+                  _searchBar(),
+                  Expanded(
+                    child: Padding(
+                      padding: const EdgeInsets.only(left: 5),
+                      child: GridView.builder(
+                        itemCount: snapshot.data.length,
+                        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                            childAspectRatio: 0.5,
+                            crossAxisCount:
+                                (orientation == Orientation.portrait) ? 2 : 3),
+                        physics: BouncingScrollPhysics(),
+                        itemBuilder: (BuildContext context, int index) {
+                          return _buildMovieCard(context, snapshot, index);
+                        },
+                      ),
+                    ),
+                  ),
+                ],
+              );
             } else {
               return Center(child: CircularProgressIndicator());
             }
@@ -54,50 +87,121 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget buildMovieCard(
+  _buildMovieCard(
       BuildContext context, AsyncSnapshot<List<Movie>> snapshot, int index) {
-    return Stack(
-      children: <Widget>[
-        Container(
-          color: Colors.black,
-          child: Image(
-            image: NetworkImage(snapshot.data[index].poster.toString()),
-            height: 300,
-            width: MediaQuery.of(context).size.width,
-            fit: BoxFit.cover,
+    return Container(
+      margin: EdgeInsets.only(right: 5, bottom: 5),
+      height: 600,
+      width: 160,
+      child: Stack(
+        alignment: Alignment.center,
+        children: <Widget>[
+          Container(
+            decoration: BoxDecoration(
+                image: DecorationImage(
+                    image: NetworkImage(snapshot.data[index].poster),
+                    fit: BoxFit.cover),
+                borderRadius: BorderRadius.circular(5)),
           ),
-        ),
-        Container(
-          color: Color.fromRGBO(0, 0, 0, 0.5),
-          height: 300,
-          width: MediaQuery.of(context).size.width,
-          padding: EdgeInsets.all(10),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.end,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              Container(
-                child: Text(
-                  snapshot.data[index].title,
-                  style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 24,
-                      fontWeight: FontWeight.w600),
-                ),
-              ),
-              Container(
-                child: Text(
-                  snapshot.data[index].year,
-                  style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 18,
-                      fontWeight: FontWeight.w400),
-                ),
-              )
-            ],
+          Container(
+            decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(5),
+                gradient: LinearGradient(
+                    begin: Alignment.bottomCenter,
+                    end: Alignment.topCenter,
+                    colors: [
+                      Colors.black,
+                      Colors.black87.withOpacity(0.6),
+                      Colors.black54.withOpacity(0.3),
+                      Colors.black38.withOpacity(0.3)
+                    ],
+                    stops: [
+                      0.1,
+                      0.3,
+                      0.6,
+                      1.0
+                    ])),
           ),
-        ),
-      ],
+          Positioned(
+            bottom: 65,
+            child: Column(
+              children: <Widget>[
+                Container(
+                  alignment: Alignment.center,
+                  width: 160,
+                  child: Text(
+                    snapshot.data[index].title,
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      letterSpacing: 1.2,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+                SizedBox(
+                  height: 5,
+                ),
+                Text(snapshot.data[index].year,
+                    style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 12,
+                        fontWeight: FontWeight.bold,
+                        letterSpacing: 1.2))
+              ],
+            ),
+          ),
+          Positioned(
+              bottom: 10,
+              right: 10,
+              child: Opacity(
+                opacity:
+                    favorites.contains(snapshot.data[index].imdbID) ? 1 : 0.4,
+                child: Container(
+                  decoration: BoxDecoration(
+                      color: Theme.of(context).primaryColor,
+                      borderRadius: BorderRadius.circular(30)),
+                  child: IconButton(
+                      icon: Icon(Icons.star),
+                      iconSize: 30,
+                      color: Colors.white,
+                      onPressed: () {
+                        setFavorite(snapshot.data[index].imdbID);
+                        setState(() {});
+                      }),
+                ),
+              ))
+        ],
+      ),
+    );
+  }
+
+  _searchBar() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 10),
+      child: TextField(
+        decoration: InputDecoration(
+            contentPadding: EdgeInsets.symmetric(vertical: 15),
+            fillColor: Colors.white,
+            filled: true,
+            border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(30),
+                borderSide: BorderSide(width: 0.8)),
+            enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(30),
+                borderSide: BorderSide(
+                    width: 0.8, color: Theme.of(context).primaryColor)),
+            hintText: 'Search Movie',
+            prefixIcon: Icon(
+              Icons.search,
+              size: 30,
+            ),
+            suffixIcon: IconButton(
+              icon: Icon(Icons.clear),
+              onPressed: () {},
+            )),
+      ),
     );
   }
 }
