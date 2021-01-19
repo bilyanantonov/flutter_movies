@@ -10,9 +10,9 @@ class Repository implements RemoteBase{
   RemoteService _remoteService = locator<RemoteService>();
 
    @override
-  Future<List<Movie>> getMovies(int page) {
+  Future<List<Movie>> getMovies(int page, String name) {
     if(appMode == AppMode.Debug){
-      return _remoteService.getMovies(page);
+      return _remoteService.getMovies(page, name);
     }else{
       return null;
     }

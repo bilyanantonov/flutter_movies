@@ -15,10 +15,9 @@ class MyApp extends StatelessWidget {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider<MovieViewModel>(
-          create: (context) => MovieViewModel(),
+          create: (context) => MovieViewModel(1, "batman"),
         )
       ],
-
       child: MaterialApp(
         title: 'Flutter Movies',
         debugShowCheckedModeBanner: false,

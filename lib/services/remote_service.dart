@@ -6,8 +6,8 @@ import 'dart:convert';
 class RemoteService implements RemoteBase{
 
   @override
-  Future<List<Movie>> getMovies(int page) async {
-    final url = 'https://www.omdbapi.com/?s=batman&apikey=c9f946ff&page=${page}';
+  Future<List<Movie>> getMovies(int page, String name) async {
+    final url = 'https://www.omdbapi.com/?s=${name}&apikey=c9f946ff&page=${page}';
     final headers = {'Accept': 'application/json'};
     final result = await http.get(url, headers: headers);
     if (result.statusCode == 200) {

@@ -19,15 +19,16 @@ class MovieViewModel with ChangeNotifier {
   List<Movie> _movieList;
   List<Movie> get movieList => _movieList;
 
-  MovieViewModel() {
+  MovieViewModel(int page, String name) {
     _movieList = [];
-    getMovies(1);
+    getMovies(page, name);
   }
 
-  void getMovies(int page) async {
+  void getMovies(int page, String name) async {
     try {
       state = MovieViewState.Busy;
-      List<Movie> _movies = await _repository.getMovies(page);
+      List<Movie> _movies = await _repository.getMovies(page, name);
+      movieList.clear();
       if (_movies.length > 0) {
         state = MovieViewState.Loaded;
         movieList.addAll(_movies);

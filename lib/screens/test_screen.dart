@@ -13,6 +13,7 @@ class TestScreen extends StatefulWidget {
 
 class _TestScreenState extends State<TestScreen> {
   List<String> favorites = ["tt0118688"];
+  TextEditingController _textEditingController = TextEditingController();
 
   @override
   void initState() {
@@ -30,6 +31,7 @@ class _TestScreenState extends State<TestScreen> {
   @override
   Widget build(BuildContext context) {
     final orientation = MediaQuery.of(context).orientation;
+    MovieViewModel _movieViewModel = Provider.of<MovieViewModel>(context);
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -40,7 +42,7 @@ class _TestScreenState extends State<TestScreen> {
       ),
       body: Column(
         children: [
-          _searchBar(),
+          _searchBar(_movieViewModel),
           Expanded(
             child:
                 Consumer<MovieViewModel>(builder: (context, movieModel, child) {
@@ -163,7 +165,7 @@ class _TestScreenState extends State<TestScreen> {
     );
   }
 
-  _searchBar() {
+  _searchBar(MovieViewModel movieViewModel) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 10),
       child: TextField(
@@ -185,8 +187,15 @@ class _TestScreenState extends State<TestScreen> {
             ),
             suffixIcon: IconButton(
               icon: Icon(Icons.clear),
-              onPressed: () {},
+              onPressed: () {
+                _textEditingController.clear();
+              },
             )),
+        controller: _textEditingController,
+        onEditingComplete: () {
+          movieViewModel.getMovies(1, _textEditingController.text);
+          FocusScope.of(context).unfocus();
+        },
       ),
     );
   }
