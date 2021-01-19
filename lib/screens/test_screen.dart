@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_movies/models/models.dart';
+import 'package:flutter_movies/utils/utils.dart';
 import 'package:flutter_movies/view_models/movie_view_model.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
-
 import 'package:provider/provider.dart';
 
 class TestScreen extends StatefulWidget {
@@ -193,8 +191,18 @@ class _TestScreenState extends State<TestScreen> {
             )),
         controller: _textEditingController,
         onEditingComplete: () {
-          movieViewModel.getMovies(1, _textEditingController.text);
-          FocusScope.of(context).unfocus();
+          var validateSearch =
+              ValidationHelper.validateSearchText(_textEditingController.text);
+          if (validateSearch != null) {
+            print(validateSearch);
+            FocusScope.of(context).unfocus();
+            Future.delayed(const Duration(milliseconds: 500), () {
+              AlertMessage.alertMessage(context, "Warning", validateSearch);
+            });
+          } else {
+            movieViewModel.getMovies(1, _textEditingController.text);
+            FocusScope.of(context).unfocus();
+          }
         },
       ),
     );
