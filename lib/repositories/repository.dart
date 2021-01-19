@@ -1,20 +1,36 @@
+import 'package:flutter_movies/models/favorite.dart';
 import 'package:flutter_movies/models/movie.dart';
 import 'package:flutter_movies/services/services.dart';
 import 'package:flutter_movies/utils/utils.dart';
 
-enum AppMode {Debug, Release}
+enum AppMode { Debug, Release }
 
-class Repository implements RemoteBase{
- 
+class Repository implements RemoteBase {
   AppMode appMode = AppMode.Debug;
   RemoteService _remoteService = locator<RemoteService>();
+  DatabaseHelper databaseHelper;
+  Repository() {
+    databaseHelper = DatabaseHelper();
+  }
 
-   @override
+  @override
   Future<List<Movie>> getMovies(int page, String name) {
-    if(appMode == AppMode.Debug){
+    if (appMode == AppMode.Debug) {
       return _remoteService.getMovies(page, name);
-    }else{
+    } else {
       return null;
     }
+  }
+
+  Future<List<Favorite>> getFavorites() async {
+    return await databaseHelper.getFavoriteList();
+  }
+
+  Future<int> addFavorite(String imdbID) async {
+    return await databaseHelper.addFavorite(imdbID);
+  }
+
+  Future<int> removeFavorite(String imdbID) async {
+    return await databaseHelper.removeFavorite(imdbID);
   }
 }

@@ -18,11 +18,13 @@ class _TestScreenState extends State<TestScreen> {
     super.initState();
   }
 
-  void setFavorite(String imdbID) {
-    if (!favorites.contains(imdbID)) {
-      favorites.add(imdbID);
+  void setFavorite(String imdbID, MovieViewModel movieViewModel) async {
+    if (movieViewModel.checkFav(imdbID)) {
+      await movieViewModel.removeFavorite(imdbID);
+      setState(() {});
     } else {
-      favorites.remove(imdbID);
+      await movieViewModel.addFavorite(imdbID);
+      setState(() {});
     }
   }
 
@@ -55,8 +57,8 @@ class _TestScreenState extends State<TestScreen> {
                             (orientation == Orientation.portrait) ? 2 : 3),
                     physics: BouncingScrollPhysics(),
                     itemBuilder: (BuildContext context, int index) {
-                      return _buildMovieCard(
-                          context, movieModel.movieList[index]);
+                      return _buildMovieCard(context,
+                          movieModel.movieList[index], _movieViewModel);
                     },
                   ),
                 );
@@ -76,7 +78,8 @@ class _TestScreenState extends State<TestScreen> {
     );
   }
 
-  _buildMovieCard(BuildContext context, Movie movie) {
+  _buildMovieCard(
+      BuildContext context, Movie movie, MovieViewModel movieViewModel) {
     return Container(
       margin: EdgeInsets.only(right: 5, bottom: 5),
       height: 600,
@@ -143,7 +146,7 @@ class _TestScreenState extends State<TestScreen> {
               bottom: 10,
               right: 10,
               child: Opacity(
-                opacity: favorites.contains(movie.imdbID) ? 1 : 0.4,
+                opacity: movieViewModel.checkFav(movie.imdbID) ? 1 : 0.4,
                 child: Container(
                   decoration: BoxDecoration(
                       color: Theme.of(context).primaryColor,
@@ -153,7 +156,7 @@ class _TestScreenState extends State<TestScreen> {
                       iconSize: 30,
                       color: Colors.white,
                       onPressed: () {
-                        setFavorite(movie.imdbID);
+                        setFavorite(movie.imdbID, movieViewModel);
                         setState(() {});
                       }),
                 ),
