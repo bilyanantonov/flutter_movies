@@ -26,11 +26,11 @@ class Repository implements RemoteBase {
     return await databaseHelper.getFavoriteList();
   }
 
-  Future<int> addFavorite(String imdbID) async {
-    return await databaseHelper.addFavorite(imdbID);
+  Future<int> addFavorite(Movie movie) async {
+    return await databaseHelper.addFavorite(movie);
   }
 
-  Future<int> removeFavorite(String imdbID) async {
-    return await databaseHelper.removeFavorite(imdbID);
+  Future<int> removeFavorite(Movie movie) async {
+    return await databaseHelper.removeFavorite(movie);
   }
 }

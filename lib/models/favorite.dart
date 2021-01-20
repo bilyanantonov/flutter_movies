@@ -1,14 +1,26 @@
-class Favorite{
+class Favorite {
+  String title;
+  String year;
   String imdbID;
-  Favorite({this.imdbID});
+  String type;
+  String poster;
+  Favorite({this.title, this.year, this.imdbID, this.type, this.poster});
 
-  factory Favorite.fromMap(Map data) {
-    return Favorite(imdbID:data['imdbID']);
+  Favorite.fromMap(Map<String, dynamic> map) {
+    this.title = map['title'];
+    this.year = map['year'];
+    this.imdbID = map['imdbID'];
+    this.type = map['type'];
+    this.poster = map['poster'];
   }
 
   Map<String, dynamic> toMap() {
-    return {
-      "imdbID": imdbID
-    };
+    var map = Map<String, dynamic>();
+    map['Title'] = title;
+    map['Year'] = year;
+    map['imdbID'] = imdbID;
+    map['Type'] = type;
+    map['Poster'] = poster;
+    return map;
   }
 }

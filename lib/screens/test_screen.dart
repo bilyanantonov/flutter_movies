@@ -18,12 +18,12 @@ class _TestScreenState extends State<TestScreen> {
     super.initState();
   }
 
-  void setFavorite(String imdbID, MovieViewModel movieViewModel) async {
-    if (movieViewModel.checkFav(imdbID)) {
-      await movieViewModel.removeFavorite(imdbID);
+  void setFavorite(Movie movie, MovieViewModel movieViewModel) async {
+    if (movieViewModel.checkFav(movie)) {
+      await movieViewModel.removeFavorite(movie);
       setState(() {});
     } else {
-      await movieViewModel.addFavorite(imdbID);
+      await movieViewModel.addFavorite(movie);
       setState(() {});
     }
   }
@@ -38,6 +38,19 @@ class _TestScreenState extends State<TestScreen> {
           "Movies",
           style: TextStyle(color: Colors.blue),
         ),
+        actions: [
+          RaisedButton(
+            color: Colors.white,
+            child:Text("Favorites",style: TextStyle(color:Colors.blue),),
+            onPressed: (){
+              List<Favorite> favorites = [];
+              favorites.addAll(_movieViewModel.favoriteList);
+              for (var item in favorites) {
+                print(item.title);
+              }
+            },
+          )
+        ],
         backgroundColor: Colors.white,
       ),
       body: Column(
@@ -146,7 +159,7 @@ class _TestScreenState extends State<TestScreen> {
               bottom: 10,
               right: 10,
               child: Opacity(
-                opacity: movieViewModel.checkFav(movie.imdbID) ? 1 : 0.4,
+                opacity: movieViewModel.checkFav(movie) ? 1 : 0.4,
                 child: Container(
                   decoration: BoxDecoration(
                       color: Theme.of(context).primaryColor,
@@ -156,7 +169,7 @@ class _TestScreenState extends State<TestScreen> {
                       iconSize: 30,
                       color: Colors.white,
                       onPressed: () {
-                        setFavorite(movie.imdbID, movieViewModel);
+                        setFavorite(movie, movieViewModel);
                         setState(() {});
                       }),
                 ),

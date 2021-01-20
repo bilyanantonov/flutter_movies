@@ -44,9 +44,9 @@ class MovieViewModel with ChangeNotifier {
     }
   }
 
-  bool checkFav(String imdbID) {
+  bool checkFav(Movie movie) {
     var result = _favoriteList
-        .singleWhere((element) => element.imdbID == imdbID, orElse: () {
+        .singleWhere((element) => element.imdbID == movie.imdbID, orElse: () {
       return null;
     });
     if (result != null) {
@@ -64,18 +64,23 @@ class MovieViewModel with ChangeNotifier {
     }
   }
 
-  Future<int> addFavorite(String imdbID) async {
-    var result = await _repository.addFavorite(imdbID);
+  Future<int> addFavorite(Movie movie) async {
+    var result = await _repository.addFavorite(movie);
     if (result > 0) {
-      favoriteList.add(Favorite(imdbID: imdbID));
+      favoriteList.add(Favorite(
+          title: movie.title,
+          year: movie.year,
+          imdbID: movie.imdbID,
+          type: movie.type,
+          poster: movie.poster));
     }
     return result;
   }
 
-  Future<int> removeFavorite(String imdbID) async {
-    var result = await _repository.removeFavorite(imdbID);
+  Future<int> removeFavorite(Movie movie) async {
+    var result = await _repository.removeFavorite(movie);
     if (result > 0) {
-      favoriteList.removeWhere((element) => element.imdbID == imdbID);
+      favoriteList.removeWhere((element) => element.imdbID == movie.imdbID);
     }
     return result;
   }

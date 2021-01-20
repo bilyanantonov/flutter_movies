@@ -9,7 +9,11 @@ class DatabaseHelper {
   static Database _database;
 
   String _favTable = 'favTable';
+  String _title = 'title';
+  String _year = 'year';
   String _imdbID = 'imdbID';
+  String _type = 'type';
+  String _poster = 'poster';
 
   factory DatabaseHelper() {
     if (_databaseHelper == null) {
@@ -41,7 +45,8 @@ class DatabaseHelper {
 
   Future _createDB(Database db, int version) async {
     print("CREATE DB METHOD IS WORKED,TABLE GOING TO CREATE");
-    await db.execute("CREATE TABLE $_favTable ( $_imdbID TEXT)");
+    await db.execute(
+        "CREATE TABLE $_favTable ($_title TEXT, $_year TEXT, $_imdbID TEXT, $_type TEXT, $_poster TEXT)");
   }
 
   Future<List<Map<String, dynamic>>> getFavorites() async {
@@ -59,19 +64,23 @@ class DatabaseHelper {
     return favList;
   }
 
-  Future<int> addFavorite(String imdbID) async {
+  Future<int> addFavorite(Movie movie) async {
     Favorite fav = Favorite();
-    fav.imdbID = imdbID;
+    fav.title = movie.title;
+    fav.year = movie.year;
+    fav.imdbID = movie.imdbID;
+    fav.type = movie.type;
+    fav.poster = movie.poster;
 
     var db = await _getDatabase();
     var result = await db.insert(_favTable, fav.toMap());
     return result;
   }
 
-  Future<int> removeFavorite(String imdbID) async {
+  Future<int> removeFavorite(Movie movie) async {
     var db = await _getDatabase();
-    var result =
-        await db.delete(_favTable, where: 'imdbID = ?', whereArgs: [imdbID]);
+    var result = await db
+        .delete(_favTable, where: 'imdbID = ?', whereArgs: [movie.imdbID]);
     return result;
   }
 }
