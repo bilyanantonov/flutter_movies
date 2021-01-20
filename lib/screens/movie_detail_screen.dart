@@ -41,6 +41,7 @@ class MovieDetailScreen extends StatelessWidget {
 
   _page(BuildContext context, Movie movie) {
     return SingleChildScrollView(
+      physics: BouncingScrollPhysics(),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [

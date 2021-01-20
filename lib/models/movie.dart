@@ -55,36 +55,36 @@ class Movie {
       this.response});
 
   Movie.fromJson(Map<String, dynamic> json) {
-    title = json['Title'];
-    year = json['Year'];
-    rated = json['Rated'];
-    released = json['Released'];
-    runtime = json['Runtime'];
-    genre = json['Genre'];
-    director = json['Director'];
-    writer = json['Writer'];
-    actors = json['Actors'];
-    plot = json['Plot'];
-    language = json['Language'];
-    country = json['Country'];
-    awards = json['Awards'];
-    poster = json['Poster'];
+    title = json['Title'] ?? '';
+    year = json['Year'] ?? '';
+    rated = json['Rated'] ?? '';
+    released = json['Released'] ?? '';
+    runtime = json['Runtime'] ?? '';
+    genre = json['Genre'] ?? '';
+    director = json['Director'] ?? '';
+    writer = json['Writer'] ?? '';
+    actors = json['Actors'] ?? '';
+    plot = json['Plot'] ?? '';
+    language = json['Language'] ?? '';
+    country = json['Country'] ?? '';
+    awards = json['Awards'] ?? '';
+    poster = json['Poster'] ?? 'https://dummyimage.com/720x1280/fff/aaa';
     if (json['Ratings'] != null) {
       ratings = new List<Rating>();
       json['Ratings'].forEach((v) {
         ratings.add(new Rating.fromJson(v));
       });
     }
-    metascore = json['Metascore'];
-    imdbRating = json['imdbRating'];
-    imdbVotes = json['imdbVotes'];
-    imdbID = json['imdbID'];
-    type = json['Type'];
-    dVD = json['DVD'];
-    boxOffice = json['BoxOffice'];
-    production = json['Production'];
-    website = json['Website'];
-    response = json['Response'];
+    metascore = json['Metascore'] ?? '';
+    imdbRating = json['imdbRating'] ?? '';
+    imdbVotes = json['imdbVotes'] ?? '';
+    imdbID = json['imdbID'] ?? '';
+    type = json['Type'] ?? '';
+    dVD = json['DVD'] ?? '';
+    boxOffice = json['BoxOffice'] ?? '';
+    production = json['Production'] ?? '';
+    website = json['Website'] ?? '';
+    response = json['Response'] ?? '';
   }
 
   Map<String, dynamic> toJson() {
