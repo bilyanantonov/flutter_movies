@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_movies/models/models.dart';
+import 'package:flutter_movies/screens/screens.dart';
 import 'package:flutter_movies/utils/utils.dart';
 import 'package:flutter_movies/view_models/view_models.dart';
 import 'package:provider/provider.dart';
@@ -15,10 +16,22 @@ class _FavoriteMoviesScreenState extends State<FavoriteMoviesScreen> {
     Navigator.of(context).pop(true);
   }
 
+  void navigateToMovieDetail(
+      String imdbID, MovieDetailViewModel movieDetailViewModel) async {
+    movieDetailViewModel.getMovie(imdbID);
+    await Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => MovieDetailScreen(),
+        ));
+  }
+
   @override
   Widget build(BuildContext context) {
     final orientation = MediaQuery.of(context).orientation;
     MovieViewModel _movieViewModel = Provider.of<MovieViewModel>(context);
+    MovieDetailViewModel _movieDetailViewModel =
+        Provider.of<MovieDetailViewModel>(context);
 
     return WillPopScope(
       onWillPop: _onBackPressed,
@@ -47,8 +60,11 @@ class _FavoriteMoviesScreenState extends State<FavoriteMoviesScreen> {
                           (orientation == Orientation.portrait) ? 2 : 3),
                   physics: BouncingScrollPhysics(),
                   itemBuilder: (BuildContext context, int index) {
-                    return _buildMovieCard(context,
-                        movieModel.favoriteList[index], _movieViewModel);
+                    return _buildMovieCard(
+                        context,
+                        movieModel.favoriteList[index],
+                        _movieViewModel,
+                        _movieDetailViewModel);
                   },
                 ),
               );
@@ -68,112 +84,120 @@ class _FavoriteMoviesScreenState extends State<FavoriteMoviesScreen> {
   }
 
   _buildMovieCard(
-      BuildContext context, Favorite favMovie, MovieViewModel movieViewModel) {
-    return Container(
-      margin: EdgeInsets.only(right: 5, bottom: 5),
-      height: 600,
-      width: 160,
-      child: Stack(
-        alignment: Alignment.center,
-        children: <Widget>[
-          Container(
-            child: CachedNetworkImage(
-              imageBuilder: (context, imageProvider) => Container(
-                height: 600,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(5),
-                  image:
-                      DecorationImage(image: imageProvider, fit: BoxFit.cover),
-                ),
-              ),
-              imageUrl: favMovie.poster,
-              placeholder: (context, url) => Center(
-                child: Icon(Icons.image, size: 80, color: Colors.grey),
-              ),
-              errorWidget: (context, url, error) =>
-                  Icon(Icons.error, size: 80, color: Colors.grey),
-            ),
-          ),
-          // Container(
-          //   decoration: BoxDecoration(
-          //       image: DecorationImage(
-          //           image: NetworkImage(favMovie.poster), fit: BoxFit.cover),
-          //       borderRadius: BorderRadius.circular(5)),
-          // ),
-          Container(
-            decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(5),
-                gradient: LinearGradient(
-                    begin: Alignment.bottomCenter,
-                    end: Alignment.topCenter,
-                    colors: [
-                      Colors.black,
-                      Colors.black87.withOpacity(0.6),
-                      Colors.black54.withOpacity(0.3),
-                      Colors.black38.withOpacity(0.3)
-                    ],
-                    stops: [
-                      0.1,
-                      0.3,
-                      0.6,
-                      1.0
-                    ])),
-          ),
-          Positioned(
-            bottom: 65,
-            child: Column(
-              children: <Widget>[
-                Container(
-                  alignment: Alignment.center,
-                  width: 160,
-                  child: Text(
-                    favMovie.title,
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      letterSpacing: 1.2,
-                    ),
-                    textAlign: TextAlign.center,
+      BuildContext context,
+      Favorite favMovie,
+      MovieViewModel movieViewModel,
+      MovieDetailViewModel movieDetailViewModel) {
+    return GestureDetector(
+      onTap: () {
+        navigateToMovieDetail(favMovie.imdbID, movieDetailViewModel);
+      },
+      child: Container(
+        margin: EdgeInsets.only(right: 5, bottom: 5),
+        height: 600,
+        width: 160,
+        child: Stack(
+          alignment: Alignment.center,
+          children: <Widget>[
+            Container(
+              child: CachedNetworkImage(
+                imageBuilder: (context, imageProvider) => Container(
+                  height: 600,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(5),
+                    image: DecorationImage(
+                        image: imageProvider, fit: BoxFit.cover),
                   ),
                 ),
-                SizedBox(
-                  height: 5,
+                imageUrl: favMovie.poster,
+                placeholder: (context, url) => Center(
+                  child: Icon(Icons.image, size: 80, color: Colors.grey),
                 ),
-                Text(favMovie.year,
-                    style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 12,
-                        fontWeight: FontWeight.bold,
-                        letterSpacing: 1.2))
-              ],
+                errorWidget: (context, url, error) =>
+                    Icon(Icons.error, size: 80, color: Colors.grey),
+              ),
             ),
-          ),
-          Positioned(
-            bottom: 10,
-            right: 10,
-            child: Container(
+            // Container(
+            //   decoration: BoxDecoration(
+            //       image: DecorationImage(
+            //           image: NetworkImage(favMovie.poster), fit: BoxFit.cover),
+            //       borderRadius: BorderRadius.circular(5)),
+            // ),
+            Container(
               decoration: BoxDecoration(
-                  color: Colors.red, borderRadius: BorderRadius.circular(30)),
-              child: IconButton(
-                  icon: Icon(Icons.delete),
-                  iconSize: 30,
-                  color: Colors.white,
-                  onPressed: () async {
-                    Movie movie = Movie();
-                    movie.imdbID = favMovie.imdbID;
-
-                    var result = await RemoveAlert.alertMessage(context);
-                    if (result != null) {
-                      if (result) {
-                        await movieViewModel.removeFavorite(movie);
-                        setState(() {});
-                      }
-                    }
-                  }),
+                  borderRadius: BorderRadius.circular(5),
+                  gradient: LinearGradient(
+                      begin: Alignment.bottomCenter,
+                      end: Alignment.topCenter,
+                      colors: [
+                        Colors.black,
+                        Colors.black87.withOpacity(0.6),
+                        Colors.black54.withOpacity(0.3),
+                        Colors.black38.withOpacity(0.3)
+                      ],
+                      stops: [
+                        0.1,
+                        0.3,
+                        0.6,
+                        1.0
+                      ])),
             ),
-          )
-        ],
+            Positioned(
+              bottom: 65,
+              child: Column(
+                children: <Widget>[
+                  Container(
+                    alignment: Alignment.center,
+                    width: 160,
+                    child: Text(
+                      favMovie.title,
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        letterSpacing: 1.2,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                  SizedBox(
+                    height: 5,
+                  ),
+                  Text(favMovie.year,
+                      style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 12,
+                          fontWeight: FontWeight.bold,
+                          letterSpacing: 1.2))
+                ],
+              ),
+            ),
+            Positioned(
+              bottom: 10,
+              right: 10,
+              child: Container(
+                decoration: BoxDecoration(
+                    color: Colors.red, borderRadius: BorderRadius.circular(30)),
+                child: IconButton(
+                    icon: Icon(Icons.delete),
+                    iconSize: 30,
+                    color: Colors.white,
+                    onPressed: () async {
+                      Movie movie = Movie();
+                      movie.imdbID = favMovie.imdbID;
+
+                      var result = await RemoveAlert.alertMessage(context);
+                      if (result != null) {
+                        if (result) {
+                          await movieViewModel.removeFavorite(movie);
+                          setState(() {});
+                        }
+                      }
+                    }),
+              ),
+            )
+          ],
+        ),
       ),
     );
   }
