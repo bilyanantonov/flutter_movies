@@ -202,12 +202,6 @@ class MovieDetailScreen extends StatelessWidget {
         ],
       ),
     );
-    // return Image(
-    //   image: AssetImage(widget.restaurant.imageUrl),
-    //   height: 220,
-    //   width: MediaQuery.of(context).size.width,
-    //   fit: BoxFit.cover,
-    // );
   }
 
   _buildRow(String title, String description) {
@@ -219,12 +213,13 @@ class MovieDetailScreen extends StatelessWidget {
           Text(
             title,
             style: TextStyle(
-                color: Colors.black, fontSize: 20, fontWeight: FontWeight.w600),
+                color: Colors.black, fontSize: 18, fontWeight: FontWeight.w600),
           ),
           Text(
             description,
-            style: TextStyle(color: Colors.grey, fontSize: 16),
-          )
+            style: TextStyle(color: Colors.grey, fontSize: 14),
+          ),
+          Divider(color: Colors.grey,height: 1,)
         ],
       ),
     );
