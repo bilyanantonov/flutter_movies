@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_movies/models/models.dart';
+import 'package:flutter_movies/screens/screens.dart';
 import 'package:flutter_movies/utils/utils.dart';
 import 'package:flutter_movies/view_models/movie_view_model.dart';
 import 'package:provider/provider.dart';
@@ -28,6 +29,22 @@ class _TestScreenState extends State<TestScreen> {
     }
   }
 
+  void navigateToFavoriteScreen() async {
+    final result = await Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => FavoriteMoviesScreen(),
+        ));
+
+    if (result) {
+      setState(() {});
+    }
+    // Navigator.push(
+    //   context,
+    //   MaterialPageRoute(builder: (context) => FavoriteMoviesScreen()),
+    // );
+  }
+
   @override
   Widget build(BuildContext context) {
     final orientation = MediaQuery.of(context).orientation;
@@ -41,13 +58,17 @@ class _TestScreenState extends State<TestScreen> {
         actions: [
           RaisedButton(
             color: Colors.white,
-            child:Text("Favorites",style: TextStyle(color:Colors.blue),),
-            onPressed: (){
-              List<Favorite> favorites = [];
-              favorites.addAll(_movieViewModel.favoriteList);
-              for (var item in favorites) {
-                print(item.title);
-              }
+            child: Text(
+              "Favorites",
+              style: TextStyle(color: Colors.blue),
+            ),
+            onPressed: () {
+              navigateToFavoriteScreen();
+              // List<Favorite> favorites = [];
+              // favorites.addAll(_movieViewModel.favoriteList);
+              // for (var item in favorites) {
+              //   print(item.title);
+              // }
             },
           )
         ],
