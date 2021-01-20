@@ -9,23 +9,23 @@ class RemoveAlert {
             content: new Text('Do you want to remove from your favorites'),
             actions: <Widget>[
               new GestureDetector(
-                onTap: () => Navigator.of(context).pop(false),
-                child: Padding(
-                  padding: const EdgeInsets.all(4.0),
-                  child: Text(
-                    "NO",
-                    style: TextStyle(color: Colors.blue,fontSize: 16),
-                  ),
-                ),
-              ),
-              SizedBox(height: 16),
-              new GestureDetector(
                 onTap: () => Navigator.of(context).pop(true),
                 child: Padding(
                   padding: const EdgeInsets.all(4.0),
                   child: Text(
                     "YES",
-                    style: TextStyle(color: Colors.blue,fontSize: 16),
+                    style: TextStyle(color: Colors.blue, fontSize: 16),
+                  ),
+                ),
+              ),
+              SizedBox(height: 10),
+              new GestureDetector(
+                onTap: () => Navigator.of(context).pop(false),
+                child: Padding(
+                  padding: const EdgeInsets.all(4.0),
+                  child: Text(
+                    "NO",
+                    style: TextStyle(color: Colors.blue, fontSize: 16),
                   ),
                 ),
               ),
