@@ -8,6 +8,9 @@ enum MovieViewState { Idle, Busy, Loaded, NoItem }
 class MovieViewModel with ChangeNotifier {
   MovieViewState _state = MovieViewState.Idle;
   Repository _repository = locator<Repository>();
+  int _page;
+  String _name;
+  bool canGetMore = true;
 
   MovieViewState get state => _state;
   set state(MovieViewState value) {
@@ -28,6 +31,8 @@ class MovieViewModel with ChangeNotifier {
   }
 
   void getMovies(int page, String name) async {
+    _page = page;
+    _name = name;
     try {
       state = MovieViewState.Busy;
       await getFavorites();
@@ -36,11 +41,30 @@ class MovieViewModel with ChangeNotifier {
       if (_movies.length > 0) {
         state = MovieViewState.Loaded;
         movieList.addAll(_movies);
+        _page++;
       } else {
         state = MovieViewState.NoItem;
       }
     } catch (e) {
       state = MovieViewState.NoItem;
+    }
+  }
+
+  Future<void> getMoreMovies() async {
+    if (canGetMore) {
+      try {
+        canGetMore = false;
+        await getFavorites();
+        List<Movie> _movies = await _repository.getMovies(_page, _name);
+        if (_movies.length > 0) {
+          movieList.addAll(_movies);
+          _page++;
+          canGetMore = true;
+        }
+      } catch (e) {
+        canGetMore = true;
+        print("no more item");
+      }
     }
   }
 

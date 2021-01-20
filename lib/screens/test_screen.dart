@@ -11,12 +11,29 @@ class TestScreen extends StatefulWidget {
 }
 
 class _TestScreenState extends State<TestScreen> {
-  List<String> favorites = ["tt0118688"];
   TextEditingController _textEditingController = TextEditingController();
+  final _scrollController = ScrollController();
 
   @override
   void initState() {
     super.initState();
+  }
+
+  bool _onScrollNotification(
+      ScrollNotification notif, MovieViewModel movieViewModel) {
+    if (notif is ScrollEndNotification &&
+        _scrollController.position.extentAfter == 0) {
+      print("You are on the end of list");
+      getMoreMovies(movieViewModel);
+
+      return true;
+    }
+    return false;
+  }
+
+  void getMoreMovies(MovieViewModel movieViewModel) async {
+    await movieViewModel.getMoreMovies();
+    setState(() {});
   }
 
   void setFavorite(Movie movie, MovieViewModel movieViewModel) async {
@@ -39,10 +56,6 @@ class _TestScreenState extends State<TestScreen> {
     if (result) {
       setState(() {});
     }
-    // Navigator.push(
-    //   context,
-    //   MaterialPageRoute(builder: (context) => FavoriteMoviesScreen()),
-    // );
   }
 
   @override
@@ -64,11 +77,6 @@ class _TestScreenState extends State<TestScreen> {
             ),
             onPressed: () {
               navigateToFavoriteScreen();
-              // List<Favorite> favorites = [];
-              // favorites.addAll(_movieViewModel.favoriteList);
-              // for (var item in favorites) {
-              //   print(item.title);
-              // }
             },
           )
         ],
@@ -83,17 +91,22 @@ class _TestScreenState extends State<TestScreen> {
               if (movieModel.state == MovieViewState.Loaded) {
                 return Padding(
                   padding: const EdgeInsets.only(left: 5),
-                  child: GridView.builder(
-                    itemCount: movieModel.movieList.length,
-                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                        childAspectRatio: 0.5,
-                        crossAxisCount:
-                            (orientation == Orientation.portrait) ? 2 : 3),
-                    physics: BouncingScrollPhysics(),
-                    itemBuilder: (BuildContext context, int index) {
-                      return _buildMovieCard(context,
-                          movieModel.movieList[index], _movieViewModel);
-                    },
+                  child: NotificationListener<ScrollNotification>(
+                    onNotification: (notification) =>
+                        _onScrollNotification(notification, movieModel),
+                    child: GridView.builder(
+                      controller: _scrollController,
+                      itemCount: movieModel.movieList.length,
+                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                          childAspectRatio: 0.5,
+                          crossAxisCount:
+                              (orientation == Orientation.portrait) ? 2 : 3),
+                      physics: BouncingScrollPhysics(),
+                      itemBuilder: (BuildContext context, int index) {
+                        return _buildMovieCard(context,
+                            movieModel.movieList[index], _movieViewModel);
+                      },
+                    ),
                   ),
                 );
               } else if (movieModel.state == MovieViewState.Busy) {
