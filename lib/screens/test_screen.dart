@@ -4,6 +4,7 @@ import 'package:flutter_movies/models/models.dart';
 import 'package:flutter_movies/screens/screens.dart';
 import 'package:flutter_movies/utils/utils.dart';
 import 'package:flutter_movies/view_models/movie_view_model.dart';
+import 'package:flutter_movies/view_models/view_models.dart';
 import 'package:provider/provider.dart';
 
 class TestScreen extends StatefulWidget {
@@ -59,10 +60,22 @@ class _TestScreenState extends State<TestScreen> {
     }
   }
 
+  void navigateToMovieDetail(
+      String imdbID, MovieDetailViewModel movieDetailViewModel) async {
+    movieDetailViewModel.getMovie(imdbID);
+    await Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => MovieDetailScreen(),
+        ));
+  }
+
   @override
   Widget build(BuildContext context) {
     final orientation = MediaQuery.of(context).orientation;
     MovieViewModel _movieViewModel = Provider.of<MovieViewModel>(context);
+    MovieDetailViewModel _movieDetailViewModel =
+        Provider.of<MovieDetailViewModel>(context);
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -104,8 +117,11 @@ class _TestScreenState extends State<TestScreen> {
                               (orientation == Orientation.portrait) ? 2 : 3),
                       physics: BouncingScrollPhysics(),
                       itemBuilder: (BuildContext context, int index) {
-                        return _buildMovieCard(context,
-                            movieModel.movieList[index], _movieViewModel);
+                        return _buildMovieCard(
+                            context,
+                            movieModel.movieList[index],
+                            _movieViewModel,
+                            _movieDetailViewModel);
                       },
                     ),
                   ),
@@ -127,107 +143,115 @@ class _TestScreenState extends State<TestScreen> {
   }
 
   _buildMovieCard(
-      BuildContext context, Movie movie, MovieViewModel movieViewModel) {
-    return Container(
-      margin: EdgeInsets.only(right: 5, bottom: 5),
-      height: 600,
-      width: 160,
-      child: Stack(
-        alignment: Alignment.center,
-        children: <Widget>[
-          Container(
-            child: CachedNetworkImage(
-              imageBuilder: (context, imageProvider) => Container(
-                height: 600,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(5),
-                  image:
-                      DecorationImage(image: imageProvider, fit: BoxFit.cover),
-                ),
-              ),
-              imageUrl: movie.poster,
-              placeholder: (context, url) => Center(
-                child: Icon(Icons.image, size: 80, color: Colors.grey),
-              ),
-              errorWidget: (context, url, error) =>
-                  Icon(Icons.error, size: 80, color: Colors.grey),
-            ),
-          ),
-          // Container(
-          //   decoration: BoxDecoration(
-          //       image: DecorationImage(
-          //           image: NetworkImage(movie.poster), fit: BoxFit.cover),
-          //       borderRadius: BorderRadius.circular(5)),
-          // ),
-          Container(
-            decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(5),
-                gradient: LinearGradient(
-                    begin: Alignment.bottomCenter,
-                    end: Alignment.topCenter,
-                    colors: [
-                      Colors.black,
-                      Colors.black87.withOpacity(0.6),
-                      Colors.black54.withOpacity(0.3),
-                      Colors.black38.withOpacity(0.3)
-                    ],
-                    stops: [
-                      0.1,
-                      0.3,
-                      0.6,
-                      1.0
-                    ])),
-          ),
-          Positioned(
-            bottom: 65,
-            child: Column(
-              children: <Widget>[
-                Container(
-                  alignment: Alignment.center,
-                  width: 160,
-                  child: Text(
-                    movie.title,
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      letterSpacing: 1.2,
-                    ),
-                    textAlign: TextAlign.center,
+      BuildContext context,
+      Movie movie,
+      MovieViewModel movieViewModel,
+      MovieDetailViewModel movieDetailViewModel) {
+    return GestureDetector(
+      onTap: () {
+        navigateToMovieDetail(movie.imdbID, movieDetailViewModel);
+      },
+      child: Container(
+        margin: EdgeInsets.only(right: 5, bottom: 5),
+        height: 600,
+        width: 160,
+        child: Stack(
+          alignment: Alignment.center,
+          children: <Widget>[
+            Container(
+              child: CachedNetworkImage(
+                imageBuilder: (context, imageProvider) => Container(
+                  height: 600,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(5),
+                    image: DecorationImage(
+                        image: imageProvider, fit: BoxFit.cover),
                   ),
                 ),
-                SizedBox(
-                  height: 5,
+                imageUrl: movie.poster,
+                placeholder: (context, url) => Center(
+                  child: Icon(Icons.image, size: 80, color: Colors.grey),
                 ),
-                Text(movie.year,
-                    style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 12,
-                        fontWeight: FontWeight.bold,
-                        letterSpacing: 1.2))
-              ],
+                errorWidget: (context, url, error) =>
+                    Icon(Icons.error, size: 80, color: Colors.grey),
+              ),
             ),
-          ),
-          Positioned(
-              bottom: 10,
-              right: 10,
-              child: Opacity(
-                opacity: movieViewModel.checkFav(movie) ? 1 : 0.4,
-                child: Container(
-                  decoration: BoxDecoration(
-                      color: Theme.of(context).primaryColor,
-                      borderRadius: BorderRadius.circular(30)),
-                  child: IconButton(
-                      icon: Icon(Icons.star),
-                      iconSize: 30,
-                      color: Colors.white,
-                      onPressed: () {
-                        setFavorite(movie, movieViewModel);
-                        setState(() {});
-                      }),
-                ),
-              ))
-        ],
+            // Container(
+            //   decoration: BoxDecoration(
+            //       image: DecorationImage(
+            //           image: NetworkImage(movie.poster), fit: BoxFit.cover),
+            //       borderRadius: BorderRadius.circular(5)),
+            // ),
+            Container(
+              decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(5),
+                  gradient: LinearGradient(
+                      begin: Alignment.bottomCenter,
+                      end: Alignment.topCenter,
+                      colors: [
+                        Colors.black,
+                        Colors.black87.withOpacity(0.6),
+                        Colors.black54.withOpacity(0.3),
+                        Colors.black38.withOpacity(0.3)
+                      ],
+                      stops: [
+                        0.1,
+                        0.3,
+                        0.6,
+                        1.0
+                      ])),
+            ),
+            Positioned(
+              bottom: 65,
+              child: Column(
+                children: <Widget>[
+                  Container(
+                    alignment: Alignment.center,
+                    width: 160,
+                    child: Text(
+                      movie.title,
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        letterSpacing: 1.2,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                  SizedBox(
+                    height: 5,
+                  ),
+                  Text(movie.year,
+                      style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 12,
+                          fontWeight: FontWeight.bold,
+                          letterSpacing: 1.2))
+                ],
+              ),
+            ),
+            Positioned(
+                bottom: 10,
+                right: 10,
+                child: Opacity(
+                  opacity: movieViewModel.checkFav(movie) ? 1 : 0.4,
+                  child: Container(
+                    decoration: BoxDecoration(
+                        color: Theme.of(context).primaryColor,
+                        borderRadius: BorderRadius.circular(30)),
+                    child: IconButton(
+                        icon: Icon(Icons.star),
+                        iconSize: 30,
+                        color: Colors.white,
+                        onPressed: () {
+                          setFavorite(movie, movieViewModel);
+                          setState(() {});
+                        }),
+                  ),
+                ))
+          ],
+        ),
       ),
     );
   }

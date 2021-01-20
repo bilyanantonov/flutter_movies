@@ -12,10 +12,22 @@ class RemoteService implements RemoteBase{
     final result = await http.get(url, headers: headers);
     if (result.statusCode == 200) {
       final searchResult = (SearchResult.fromJson(json.decode(result.body)));
-      // return await Future.delayed(Duration(seconds: 1), () => searchResult.movies);
       return searchResult.movies.toList();
     } else {
-      throw Exception("Bağlanamadık ${result.statusCode}");
+      throw Exception("Connection problem ${result.statusCode}");
+    }
+  }
+
+  @override
+  Future<Movie> getMovie(String imdbID) async {
+    final url = 'https://www.omdbapi.com/?i=${imdbID}&apikey=c9f946ff';
+    final headers = {'Accept': 'application/json'};
+    final result = await http.get(url, headers: headers);
+    if (result.statusCode == 200) {
+      final movie = (Movie.fromJson(json.decode(result.body)));
+      return movie;
+    } else {
+      throw Exception("Connection problem ${result.statusCode}");
     }
   }
   

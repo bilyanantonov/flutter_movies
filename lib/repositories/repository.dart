@@ -33,4 +33,13 @@ class Repository implements RemoteBase {
   Future<int> removeFavorite(Movie movie) async {
     return await databaseHelper.removeFavorite(movie);
   }
+
+  @override
+  Future<Movie> getMovie(String imdbID) {
+    if (appMode == AppMode.Debug) {
+      return _remoteService.getMovie(imdbID);
+    } else {
+      return null;
+    }
+  }
 }

@@ -16,6 +16,9 @@ class MyApp extends StatelessWidget {
       providers: [
         ChangeNotifierProvider<MovieViewModel>(
           create: (context) => MovieViewModel(1, "batman"),
+        ),
+        ChangeNotifierProvider<MovieDetailViewModel>(
+          create: (context) => MovieDetailViewModel(),
         )
       ],
       child: MaterialApp(
