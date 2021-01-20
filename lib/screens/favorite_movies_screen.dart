@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_movies/models/models.dart';
+import 'package:flutter_movies/utils/utils.dart';
 import 'package:flutter_movies/view_models/view_models.dart';
 import 'package:provider/provider.dart';
 
@@ -142,10 +143,14 @@ class _FavoriteMoviesScreenState extends State<FavoriteMoviesScreen> {
                   onPressed: () async {
                     Movie movie = Movie();
                     movie.imdbID = favMovie.imdbID;
-                    await movieViewModel.removeFavorite(movie);
-                    setState(() {});
-                    // setFavorite(movie, movieViewModel);
-                    // setState(() {});
+
+                    var result = await RemoveAlert.alertMessage(context);
+                    if (result != null) {
+                      if (result) {
+                        await movieViewModel.removeFavorite(movie);
+                        setState(() {});
+                      }
+                    }
                   }),
             ),
           )
