@@ -32,7 +32,8 @@ dependencies:
   provider: ^4.0.4
   get_it: ^4.0.0
   sqflite: any
-  path_provider: ^0.4.1
+  path_provider: ^1.6.18
+  cached_network_image: ^2.5.0
 
 dev_dependencies:
   flutter_test:

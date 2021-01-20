@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_movies/models/models.dart';
 import 'package:flutter_movies/utils/utils.dart';
@@ -76,11 +77,29 @@ class _FavoriteMoviesScreenState extends State<FavoriteMoviesScreen> {
         alignment: Alignment.center,
         children: <Widget>[
           Container(
-            decoration: BoxDecoration(
-                image: DecorationImage(
-                    image: NetworkImage(favMovie.poster), fit: BoxFit.cover),
-                borderRadius: BorderRadius.circular(5)),
+            child: CachedNetworkImage(
+              imageBuilder: (context, imageProvider) => Container(
+                height: 600,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(5),
+                  image:
+                      DecorationImage(image: imageProvider, fit: BoxFit.cover),
+                ),
+              ),
+              imageUrl: favMovie.poster,
+              placeholder: (context, url) => Center(
+                child: Icon(Icons.image, size: 80, color: Colors.grey),
+              ),
+              errorWidget: (context, url, error) =>
+                  Icon(Icons.error, size: 80, color: Colors.grey),
+            ),
           ),
+          // Container(
+          //   decoration: BoxDecoration(
+          //       image: DecorationImage(
+          //           image: NetworkImage(favMovie.poster), fit: BoxFit.cover),
+          //       borderRadius: BorderRadius.circular(5)),
+          // ),
           Container(
             decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(5),
