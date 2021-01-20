@@ -9,52 +9,58 @@ class FavoriteMoviesScreen extends StatefulWidget {
 }
 
 class _FavoriteMoviesScreenState extends State<FavoriteMoviesScreen> {
-  void removeFavoriteMovie() async {}
+  Future<bool> _onBackPressed() {
+    Navigator.of(context).pop(true);
+  }
 
   @override
   Widget build(BuildContext context) {
     final orientation = MediaQuery.of(context).orientation;
     MovieViewModel _movieViewModel = Provider.of<MovieViewModel>(context);
 
-    return Scaffold(
-      appBar: AppBar(
-          backgroundColor: Colors.white,
-          leading: IconButton(
-            icon: Icon(Icons.arrow_back, color: Colors.blue),
-            onPressed: () => Navigator.of(context).pop(true),
-          ),
-          title: Text(
-            "Favorites",
-            style: TextStyle(color: Colors.blue),
-          )),
-      body: Container(
-        child: Consumer<MovieViewModel>(builder: (context, movieModel, child) {
-          if (movieModel.state == MovieViewState.Loaded) {
-            return Padding(
-              padding: const EdgeInsets.only(left: 5),
-              child: GridView.builder(
-                itemCount: movieModel.favoriteList.length,
-                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                    childAspectRatio: 0.5,
-                    crossAxisCount:
-                        (orientation == Orientation.portrait) ? 2 : 3),
-                physics: BouncingScrollPhysics(),
-                itemBuilder: (BuildContext context, int index) {
-                  return _buildMovieCard(
-                      context, movieModel.favoriteList[index], _movieViewModel);
-                },
-              ),
-            );
-          } else if (movieModel.state == MovieViewState.Busy) {
-            return Center(child: CircularProgressIndicator());
-          } else if (movieModel.state == MovieViewState.NoItem) {
-            return Center(
-              child: Text("No Movie"),
-            );
-          } else {
-            return Center();
-          }
-        }),
+    return WillPopScope(
+      onWillPop: _onBackPressed,
+      child: Scaffold(
+        appBar: AppBar(
+            backgroundColor: Colors.white,
+            leading: IconButton(
+              icon: Icon(Icons.arrow_back, color: Colors.blue),
+              onPressed: () => _onBackPressed(),
+            ),
+            title: Text(
+              "Favorites",
+              style: TextStyle(color: Colors.blue),
+            )),
+        body: Container(
+          child:
+              Consumer<MovieViewModel>(builder: (context, movieModel, child) {
+            if (movieModel.state == MovieViewState.Loaded) {
+              return Padding(
+                padding: const EdgeInsets.only(left: 5),
+                child: GridView.builder(
+                  itemCount: movieModel.favoriteList.length,
+                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                      childAspectRatio: 0.5,
+                      crossAxisCount:
+                          (orientation == Orientation.portrait) ? 2 : 3),
+                  physics: BouncingScrollPhysics(),
+                  itemBuilder: (BuildContext context, int index) {
+                    return _buildMovieCard(context,
+                        movieModel.favoriteList[index], _movieViewModel);
+                  },
+                ),
+              );
+            } else if (movieModel.state == MovieViewState.Busy) {
+              return Center(child: CircularProgressIndicator());
+            } else if (movieModel.state == MovieViewState.NoItem) {
+              return Center(
+                child: Text("No Movie"),
+              );
+            } else {
+              return Center();
+            }
+          }),
+        ),
       ),
     );
   }
@@ -137,9 +143,7 @@ class _FavoriteMoviesScreenState extends State<FavoriteMoviesScreen> {
                     Movie movie = Movie();
                     movie.imdbID = favMovie.imdbID;
                     await movieViewModel.removeFavorite(movie);
-                    setState(() {
-
-                    });
+                    setState(() {});
                     // setFavorite(movie, movieViewModel);
                     // setState(() {});
                   }),
