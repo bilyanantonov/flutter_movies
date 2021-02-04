@@ -21,6 +21,13 @@ class _HomeScreenState extends State<HomeScreen> {
     super.initState();
   }
 
+  @override
+  void dispose() {
+    _textEditingController.dispose();
+    _scrollController.dispose();
+    super.dispose();
+  }
+
   bool _onScrollNotification(
       ScrollNotification notif, MovieViewModel movieViewModel) {
     if (notif is ScrollEndNotification &&
@@ -35,16 +42,16 @@ class _HomeScreenState extends State<HomeScreen> {
 
   void getMoreMovies(MovieViewModel movieViewModel) async {
     await movieViewModel.getMoreMovies();
-    setState(() {});
+    // setState(() {});
   }
 
   void setFavorite(Movie movie, MovieViewModel movieViewModel) async {
     if (movieViewModel.checkFav(movie)) {
       await movieViewModel.removeFavorite(movie);
-      setState(() {});
+      // setState(() {});
     } else {
       await movieViewModel.addFavorite(movie);
-      setState(() {});
+      // setState(() {});
     }
   }
 
@@ -55,9 +62,9 @@ class _HomeScreenState extends State<HomeScreen> {
           builder: (context) => FavoriteMoviesScreen(),
         ));
 
-    if (result) {
-      setState(() {});
-    }
+    // if (result) {
+    //   setState(() {});
+    // }
   }
 
   void navigateToMovieDetail(
@@ -246,7 +253,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         color: Colors.white,
                         onPressed: () {
                           setFavorite(movie, movieViewModel);
-                          setState(() {});
+                          // setState(() {});
                         }),
                   ),
                 ))

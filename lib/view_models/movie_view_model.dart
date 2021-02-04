@@ -58,6 +58,7 @@ class MovieViewModel with ChangeNotifier {
         List<Movie> _movies = await _repository.getMovies(_page, _name);
         if (_movies.length > 0) {
           movieList.addAll(_movies);
+          notifyListeners();
           _page++;
           canGetMore = true;
         }
@@ -85,6 +86,7 @@ class MovieViewModel with ChangeNotifier {
     if (_favs.length > 0) {
       favoriteList.clear();
       favoriteList.addAll(_favs);
+      notifyListeners();
     }
   }
 
@@ -97,6 +99,7 @@ class MovieViewModel with ChangeNotifier {
           imdbID: movie.imdbID,
           type: movie.type,
           poster: movie.poster));
+      notifyListeners();
     }
     return result;
   }
@@ -105,6 +108,7 @@ class MovieViewModel with ChangeNotifier {
     var result = await _repository.removeFavorite(movie);
     if (result > 0) {
       favoriteList.removeWhere((element) => element.imdbID == movie.imdbID);
+      notifyListeners();
     }
     return result;
   }
